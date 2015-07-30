@@ -5,12 +5,14 @@ class Mission
 	{
 		"map_vr",
 		"A3_Characters_F_BLUFOR",
-		"a3_characters_f"
+		"a3_characters_f",
+		"A3_Misc_F_Helpers"
 	};
 	addOnsAuto[]=
 	{
 		"A3_Characters_F_BLUFOR",
 		"a3_characters_f",
+		"A3_Misc_F_Helpers",
 		"map_vr"
 	};
 	randomSeed=4564608;
@@ -42,7 +44,7 @@ class Mission
 				items=1;
 				class Item0
 				{
-					position[]={4000.8782,5,3999.5186};
+					position[]={4000.00,5,4000.0000};
 					id=0;
 					side="WEST";
 					vehicle="B_Soldier_F";
@@ -52,6 +54,27 @@ class Mission
 					text="Player";
 				};
 			};
+		};
+	};
+	class Vehicles
+	{
+		items=2;
+		class Item0
+		{
+			position[]={4000.0,5,4005.0};
+			offsetY=2;
+			id=1;
+			side="EMPTY";
+			vehicle="Sign_Arrow_Large_F";
+			skill=0.60000002;
+		};
+		class Item1
+		{
+			position[]={4000.0,5,4005.0};
+			id=2;
+			side="EMPTY";
+			vehicle="Sign_Sphere100cm_F";
+			skill=0.60000002;
 		};
 	};
 };
