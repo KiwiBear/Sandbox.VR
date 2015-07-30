@@ -3,10 +3,14 @@ class Mission
 {
 	addOns[]=
 	{
-		"map_vr"
+		"map_vr",
+		"A3_Characters_F_BLUFOR",
+		"a3_characters_f"
 	};
 	addOnsAuto[]=
 	{
+		"A3_Characters_F_BLUFOR",
+		"a3_characters_f",
 		"map_vr"
 	};
 	randomSeed=4564608;
@@ -26,6 +30,29 @@ class Mission
 		minute=37;
 		startFogDecay=0.0049999999;
 		forecastFogDecay=0.0049999999;
+	};
+	class Groups
+	{
+		items=1;
+		class Item0
+		{
+			side="WEST";
+			class Vehicles
+			{
+				items=1;
+				class Item0
+				{
+					position[]={4000.8782,5,3999.5186};
+					id=0;
+					side="WEST";
+					vehicle="B_Soldier_F";
+					player="PLAYER COMMANDER";
+					leader=1;
+					skill=0.60000002;
+					text="Player";
+				};
+			};
+		};
 	};
 };
 class Intro

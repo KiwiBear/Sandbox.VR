@@ -1,0 +1,6 @@
+// https://community.bistudio.com/wiki/Description.ext
+dev = "Rotter&Lyud";
+author ="Rotter&Lyud";
+onLoadName = "Arma 3 Sandbox";
+onLoadMission = "Load to Program. Load to Mod";
+loadScreen = "pictures\intro.paa";
