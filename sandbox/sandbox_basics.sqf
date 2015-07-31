@@ -1,9 +1,11 @@
+
+
+
+
+
 /** 
  * Spawns a simple helicrash like DayZ (marker optional)
  */
-
-
-
 sandbox_spawnHeliCrash = 
 {
 	private ["_location", "_markedPosition"];

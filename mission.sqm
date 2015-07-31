@@ -60,7 +60,7 @@ class Mission
 	};
 	class Vehicles
 	{
-		items=3;
+		items=4;
 		class Item0
 		{
 			position[]={3991.198,5,4005.126};
@@ -86,6 +86,14 @@ class Mission
 			vehicle="Sign_Sphere200cm_F";
 			skill=0.60000002;
 		};
+		class Item3
+		{
+			position[]={3982.427,5,4004.9346};
+			id=4;
+			side="EMPTY";
+			vehicle="Sign_Sphere200cm_F";
+			skill=0.60000002;
+		};
 	};
 	class Markers
 	{
@@ -100,7 +108,7 @@ class Mission
 	};
 	class Sensors
 	{
-		items=2;
+		items=3;
 		class Item0
 		{
 			position[]={3991.2126,5,4005.1626};
@@ -127,6 +135,21 @@ class Mission
 			text="UtilTesting1_1";
 			name="UtilTesting1_1_1";
 			expActiv="[] call sandbox_returnStartPosition;";
+			class Effects
+			{
+			};
+		};
+		class Item2
+		{
+			position[]={3982.4417,5,4004.9712};
+			a=2;
+			b=2;
+			activationBy="WEST";
+			interruptable=1;
+			age="UNKNOWN";
+			text="UtilTesting1_3";
+			name="UtilTesting1_3";
+			expActiv="0 = execVM ""sandbox\sandbox_playerMarkerPosition.sqf""";
 			class Effects
 			{
 			};

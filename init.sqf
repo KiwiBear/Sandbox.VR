@@ -1,7 +1,7 @@
 /**
  *  Sandbox setup 
  */
-
+enableSaving[false, false];
 
 /**
  * taken from ArmA3 Wasteland init.sqf
