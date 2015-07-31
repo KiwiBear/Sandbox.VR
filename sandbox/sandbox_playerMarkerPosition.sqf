@@ -2,8 +2,8 @@
  * Dynamic Player Markers
  * http://www.armaholic.com/page.php?id=25481
  */
-//sandbox_playerMarkerPosition = 
-//{
+sandbox_playerMarkerPosition = 
+{
 	if (isDedicated) exitWith {hint "is Server!"};
 
 	_playerMarkerPosition = missionNamespace getVariable (playerMarkerPosition);
@@ -47,7 +47,4 @@
 			};
 		} forEach allUnits;
 	};
-
-
-	
-//};
+};
