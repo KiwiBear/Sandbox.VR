@@ -16,35 +16,47 @@ sandbox_enemyChasePlayer =
 	_pos =  [getPos player, _min, _max, _minDistance, _atWater, _average, _shoremode] call BIS_fnc_findSafePos;
 
 	// https://community.bistudio.com/wiki/createUnit
-	_group = createGroup east;
+	_groupEast = createGroup east;
 
-	_opfor0 = _group createUnit ["O_Soldier_F", _pos, [], 100, "FORM"];
-	_opfor1 = _group createUnit ["O_Soldier_AA_F", _pos, [], 100, "FORM"];
-	_opfor2 = _group createUnit ["O_G_officer_F", _pos, [], 100, "FORM"];
-	_opfor3 = _group createUnit ["O_soldierU_medic_F", _pos, [], 100, "FORM"];
+	_opfor0 = _groupEast createUnit ["O_Soldier_F", _pos, [], 100, "FORM"];
+	sleep 0.25;
+	_opfor1 = _groupEast createUnit ["O_Soldier_AA_F", _pos, [], 100, "FORM"];
+	sleep 0.25;
+	_opfor2 = _groupEast createUnit ["O_G_officer_F", _pos, [], 100, "FORM"];
+	sleep 0.25;
+	_opfor3 = _groupEast createUnit ["O_soldierU_medic_F", _pos, [], 100, "FORM"];
+	sleep 0.25;
+
+	// Create a group player and spawns close to the player
+	_groupWest = group player;
+	_max = 5;
+	_minDistance = 1;
+	_pos =  [getPos player, _min, _max, _minDistance, _atWater, _average, _shoremode] call BIS_fnc_findSafePos;
+	_bluefor0 = _groupWest createUnit ["B_soldier_exp_F", _pos, [], 100, "FORM"];
+	sleep 0.25;
+	_bluefor1 = _groupWest createUnit ["B_Soldier_A_F", _pos, [], 100, "FORM"];
+	sleep 0.25;
+	_bluefor2 = _groupWest createUnit ["B_Soldier_SL_F", _pos, [], 100, "FORM"];
+	sleep 0.25;
+
+	// player is leader
+	group player selectLeader player;
 
 	hint format ["Be aware! Enemy is chasing you at %1!", _pos];
 
 	// http://forums.bistudio.com/showthread.php?119376-Making-enemy-units-chase-player&highlight=chase
 	while {true} do {
 		// https://community.bistudio.com/wiki/leader
-		leader _group doMove (getPos player);
-		sleep 5;
-
-		/*
-		if (!alive _opfor) exitWith {
-			hint "Great! you can acces next step";
-			deleteVehicle _opfor;
-		};*/
-
+		leader _groupEast doMove (getPos player);
+		sleep 2;
 		{
 		  if (!alive _x) then {
-		  	hint format ["Left %1 enemies to kill", count units _group];
+		  	hint format ["Left %1 enemies to kill", count units _groupEast];
 		  	deleteVehicle _x;
 		  }
-		} forEach units _group;
+		} forEach units _groupEast;
 
-		if (count units _group == 0) exitWith {
+		if (count units _groupEast == 0) exitWith {
 			hint "Great! you can acces next step";
 		};
 	};
@@ -55,6 +67,8 @@ sandbox_enemyChasePlayer =
  * Dynamic Player Markers
  * http://www.armaholic.com/page.php?id=25481
  * bug!: duplicated marks :?
+ * How can I disable the marks:? http://www.armaholic.com/forums.php?m=posts&q=10065
+ * Server.cfg -> difficult? 
  */
 sandbox_playerMarkerPosition = 
 {
@@ -90,7 +104,6 @@ sandbox_playerMarkerPosition =
 			} else {
 				_marker setMarkerPosLocal _pos;
 			};
-
 			_marker setMarkerDirLocal getDir _vehicle;
 			_marker setMarkerTypeLocal "mil_triangle";
 			_marker setMarkerTextLocal format ["%1 : %2", name _x, _marker];

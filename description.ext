@@ -2,5 +2,5 @@
 dev = "Rotter&Lyud";
 author ="Rotter&Lyud";
 onLoadName = "Arma 3 Sandbox";
-onLoadMission = "Load to Program. Load to Mod";
+onLoadMission = "A simple testing environment for learning and outright experimentation";
 loadScreen = "pictures\intro.paa";

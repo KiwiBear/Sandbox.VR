@@ -160,6 +160,7 @@ class Mission
 			age="UNKNOWN";
 			text="UtilTesting1_3";
 			name="UtilTesting1_3";
+			expCond="player in thislist";
 			expActiv="[] call sandbox_mapTeleport; Arrow setPos [getPos UtilTesting1_4 select 0, getPos UtilTesting1_4 select 1, getPos Arrow select 2]; ";
 			class Effects
 			{
@@ -175,6 +176,7 @@ class Mission
 			age="UNKNOWN";
 			text="UtilTesting1_1";
 			name="UtilTesting1_1";
+			expCond="player in thislist";
 			expActiv="[] call sandbox_returnStartPosition; Arrow setPos [getPos UtilTesting1_2 select 0, getPos UtilTesting1_2 select 1, getPos Arrow select 2]; ";
 			class Effects
 			{
@@ -190,6 +192,7 @@ class Mission
 			age="UNKNOWN";
 			text="UtilTesting1_2";
 			name="UtilTesting1_2";
+			expCond="player in thislist";
 			expActiv="0 = [] spawn sandbox_playerMarkerPosition; Arrow setPos [getPos UtilTesting1_3 select 0, getPos UtilTesting1_3 select 1, getPos Arrow select 2]; ";
 			class Effects
 			{
@@ -205,6 +208,7 @@ class Mission
 			age="UNKNOWN";
 			text="UtilTesting1_4";
 			name="UtilTesting1_4";
+			expCond="player in thislist";
 			expActiv="0 = [] spawn sandbox_enemyChasePlayer;";
 			class Effects
 			{

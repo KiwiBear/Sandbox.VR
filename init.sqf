@@ -18,6 +18,11 @@ currMissionDir = compileFinal str (_descExtPath select [0, count _descExtPath - 
 // global variables
 startPlayerPosition = getPos player; 
 
+// ?
+if (IsServer) then {
+	ace_sys_tracking_markers_enabled = false;
+	publicVariable "ace_sys_tracking_markers_enabled";
+};
 
 
 // https://community.bistudio.com/wiki/cutText
