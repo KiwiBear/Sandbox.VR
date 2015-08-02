@@ -7,7 +7,7 @@
 sandbox_spawnBlueForUnits = 
 {
 	// spawn units close to player
-	_pos = [getPos player, 0, 10, 2, 0, 5, 0] call BIS_fnc_findSafePos;
+	_pos = [getPos player, 0, 10, 2, 0, 35, 0] call BIS_fnc_findSafePos;
 	_bluefor0 = group player createUnit ["B_soldier_exp_F", _pos, [], 100, "FORM"];
 	sleep 0.25;
 	_bluefor1 = group player createUnit ["B_Soldier_A_F", _pos, [], 100, "FORM"];
@@ -26,7 +26,7 @@ sandbox_spawnBlueForUnits =
 sandbox_spawnOpForUnits = 
 {
 	// spawn a simple enemy group close to player
-	_pos =  [getPos player, 50, 150, 75, 0, 5, 0] call BIS_fnc_findSafePos;	
+	_pos =  [getPos player, 50, 125, 75, 0, 35, 0] call BIS_fnc_findSafePos;	
 	// https://community.bistudio.com/wiki/createUnit
 	_groupEast = createGroup east;
 
@@ -57,107 +57,127 @@ sandbox_spawnOpForUnits =
 };
 
 
+
+/**
+ * Spawns a Enemy heli and moves towards to player
+ * Using bis_fnc_spawnvehicle a BIS_fnc_spawnGroup
+ * Example: Open Debugger and exec this:
+ * [getMarkerPos "EastBASE", getMarkerPos "WestBASE"] call sandbox_spawnHeliEnemy;
+ */
+sandbox_spawnHeliEnemy = { 
+	
+	private ["_spawnAt", "_targetAt"];
+	_spawnAt = _this select 0;
+	_targetAt = _this select 1;
+	// Create a flying vehicle type with all crew (including turrets)
+	
+	_grpEAST = creategroup east;
+	// spawms at EAST mark
+	_posHeli = [_spawnAt, 10, 20, 10, 0, 5, 0] call BIS_fnc_findSafePos;
+	//_heliEnemyTransport = "I_Heli_Transport_02_F" createVehicle _posHeli;
+	_heliEnemyTransport = "O_Heli_Transport_04_covered_F" createVehicle _posHeli;
+	
+
+	// FAILED bis_fnc_spawnvehicle with moveInCargo
+	//_posHeliArmed = [getPos player, 100, 200, 10, 0, 5, 0] call BIS_fnc_findSafePos;
+	// _heliEnemyTransport = [_posHeliTransport, 180, "O_Heli_Transport_04_ammo_black_F", _grpEAST] call bis_fnc_spawnvehicle;
+	//_heliEnemyTransport = [_posHeliTransport, 180, "O_Truck_02_transport_F", independent] call bis_fnc_spawnvehicle;
+	//_heliEnemyAttack = [_posHeliArmed, 180, "O_Heli_Light_02_F", _grpEAST] call bis_fnc_spawnvehicle;
+
+	_posGrp = [_spawnAt, 10, 30, 20, 0, 5, 0] call BIS_fnc_findSafePos;
+	_enemyGroup1 = [_posGrp, side _grpEAST, [
+		"O_sniper_F",
+		"O_soldier_UAV_F",
+		"O_soldier_UAV_F",
+		"O_soldier_UAV_F", 
+		"O_helicrew_F",
+		"I_Soldier_AAA_F",
+		"I_Soldier_AAA_F",
+		"O_Soldier_AA_F",
+		"O_Soldier_AA_F",
+		"O_Soldier_AA_F",
+		"O_Soldier_AA_F",
+		"O_support_GMG_F",
+		"O_support_GMG_F",
+		"O_support_GMG_F",
+		"O_support_GMG_F"
+	],[],[],[],[],[],180] call BIS_fnc_spawnGroup;
+	
+
+	{ _x moveInCargo _heliEnemyTransport; sleep 0.5; } foreach units _enemyGroup1;
+	
+	_pilot = _grpEAST createUnit ["C_Driver_4_F", [0, 0, 0], [], 100, "FORM"];
+	_pilot moveInDriver _heliEnemyTransport;
+
+	_wp1 = _grpEAST addwaypoint [_targetAt, 250]; // finding a safer position for landing
+	_wp1 setWaypointType "TR UNLOAD";
+	_wp1 setWaypointStatements ["","hint 'They are coming!'; _heliEnemyTransport land ""GET OUT"""];
+
+	// Wait till the player's group is out of the helo.
+	waitUntil{{_x in _heliEnemyTransport} count units group _unit == 0};
+
+	// Once they are out, set a waypoint to the Target Base 
+	_wp2 = _grpEAST addWaypoint [_targetAt, 0];
+	_wp2 setwaypointtype "MOVE";
+	_wp2 setWaypointSpeed "FULL";
+	_wp2 setWaypointBehaviour "COMBAT";
+};
+
 /**
  * Spawns a HeliTransport and moves to a given position
+ * Waypoints style
+ * Example: 
+ * [getPos player] call sandbox_spawnHeliTransport;
  */
 
 sandbox_spawnHeliTransport = {
-	private ["_position"];
+	private ["_spawnAt"];
 
-	_position = _this select 0;
-
-	/*
-	_heliPosX = (_position select 0) + (random(50) + 5);
-	_heliPosY = (_position select 1) + (random(50) + 5);
-	_heliPosZ = _position select 2;
-	
-	hint format ["Spawn a HeliTransport at %1", [_heliPosX, _heliPosY, _heliPosZ]];	
-	*/
-
-	// Create a certain vehicle type with all crew (including turrets)
-	// Problem? is flying!
-	/*
-	_pos = [_position, 0, 20, 10, 0, 5, 0] call BIS_fnc_findSafePos;
-	_Helicrew1 = creategroup WEST;
-	_heliTransport = [_pos, 180, "B_Heli_Transport_03_F", _Helicrew1] call bis_fnc_spawnvehicle;
-
-	
-	_wp1 = _Helicrew1 addWaypoint [getPos player, 0];
-	_wp1 setWaypointType "MOVE";
-	_wp1 setWaypointSpeed "FULL";
-
-	_wp2 = _Helicrew1  addWaypoint [getPos player, 0];
-	_wp2 setWaypointType "TR UNLOAD";
-	_wp2 setWaypointSpeed "LIMITED";
-	_wp2 setwaypointstatements ["this land 'land'"];
-
-
-	_wp3 = group player addWaypoint [getPos _heliTransport, 0];
-	_wp3 setWaypointType "GETIN";
-	_wp3 setWaypointSpeed "LIMITED";
-	*/
-
-	
-	// spawns a helitransport close to trigger
-	_pos = [_position, 10, 50, 25, 0, 5, 0] call BIS_fnc_findSafePos;
-	_heliTransport = "B_Heli_Transport_03_F" createVehicle _pos;
-	_heliTransport setVectorDir [random(1), random(1), 0];
-
-	// spawns a pilot and move in Cargo as a driver
-	sleep 1.0;
-	_grpCIV = createGroup civilian;
-	_pos = [_position, 10, 50, 5, 0, 5, 0] call BIS_fnc_findSafePos;
-	_pilot = _grpCIV createUnit ["C_Driver_4_F", _pos, [], 100, "FORM"];
-	hint "";
-	_pilot moveInDriver _heliTransport;
-	_pilot action ["engineOn", _heliTransport];
-	
+	_spawnAt = _this select 0;
 
 	// get everyone inside that belongs to the player group
 	// http://www.armaholic.com/page.php?id=6197 ?
 	// this is the "fast" way
 	//{ _x moveInCargo _heliTransport; sleep 2.0} foreach units group player;
 
+	// spawns a helitransport close to trigger
+	_pos = [_spawnAt, 10, 50, 25, 0, 5, 0] call BIS_fnc_findSafePos;
+	_heliTransport = "B_Heli_Transport_03_F" createVehicle _pos;
+	_heliTransport setVectorDir [random(1), random(1), 0];
+
+	// spawns a pilot and move in Cargo as a driver
+	sleep 1.0;
+	_grpCIV = createGroup civilian;
+	_pos = [[0, 0, 0], 10, 50, 5, 0, 5, 0] call BIS_fnc_findSafePos;
+	_pilot = _grpCIV createUnit ["C_Driver_4_F", _pos, [], 100, "FORM"];
+	hint "";
+	_pilot moveInDriver _heliTransport;
+	_pilot action ["engineOn", _heliTransport];
+	
+
 	// temporaly, we change the group according the Civ driver
 	// if not, they never getin to the vehicle
 	hint "Everyone moves to the Heli!";
 	_units =  units group player;
-	units group player joinSilent  _grpCIV;
+	units group player joinSilent _grpCIV;
 
 	_wp1 = _grpCIV addWaypoint [getPos _heliTransport, 0];
 	_wp1 setWaypointType "GETIN";
 	_wp1 setWaypointSpeed "FULL";
-
+	_wp1 setwaypointstatements ["true", "({_x in _heliTransport} count units _grpCIV) == (count units _grpCIV)"];
 
 	// move a point
-	_pos = [_position, 1000, 1500, 20, 0, 5, 0] call BIS_fnc_findSafePos;
-	_wp2 = _grpCIV addWaypoint [_pos, 0];
+	_wp2 = _grpCIV addWaypoint [getMarkerPos 'WestBASE', 0];
 	_wp2 setWaypointType "MOVE";
 	_wp2 setWaypointSpeed "FULL";
+	_wp2 setwaypointstatements ["true", "hint 'An enemy helicopter is coming to Base...'; [getMarkerPos 'EastBASE', getMarkerPos 'WestBASE'] call sandbox_spawnHeliEnemy;"];
 
-	//... and landing on it
-	_wp3 = _grpCIV  addWaypoint [_pos, 0];
-	_wp3 setWaypointType "TR UNLOAD";
+	_wp3 = _grpCIV  addWaypoint [getMarkerPos 'WestBASE', 0];
+	_wp3 setWaypointType "GETOUT";
 	_wp3 setWaypointSpeed "LIMITED";
-	_wp3 setwaypointstatements ["this land 'land'"];
-
-
-	_pilot action ["engineOff", _heliTransport];
-	_wp4 = _grpCIV  addWaypoint [_pos, 0];
-	_wp4 setWaypointType "GETOUT";
-	_wp4 setWaypointSpeed "LIMITED";
-
-
-	// Bluefor again :)
-	// maybe need to syncronize
-	// I dunno how to 
-	// _grpBlueFor = createGroup west;
-	//_units join _grpBlueFor;
-	// _units join grpNull;
-
 	// return to the original group
-
-	// time to create a new step :)
+	// get out and spawns a enemey heli
+	_wp3 setwaypointstatements ["true", "hint 'landing...'; _grpBlueFor = createGroup west; units group player joinSilent _grpBlueFor; "];
 };
 
 
@@ -172,8 +192,6 @@ sandbox_enemyChasePlayer =
 
 
 	// spawn opfor soldier random safe location 
-	sleep 2.0;
-	hint format ["Be aware! Enemy is chasing you at %1!", _pos];
 	[] call sandbox_spawnOpForUnits;
 	
 	hint "Good job!";
