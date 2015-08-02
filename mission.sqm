@@ -46,7 +46,7 @@ class Mission
 				items=1;
 				class Item0
 				{
-					position[]={3999.9326,5,3998.6411};
+					position[]={3999.7368,5,3994.9219};
 					id=0;
 					side="WEST";
 					vehicle="B_Soldier_F";
@@ -68,6 +68,7 @@ class Mission
 			side="EMPTY";
 			vehicle="Sign_Sphere200cm_F";
 			skill=0.60000002;
+			text="Sphere0";
 		};
 		class Item1
 		{
@@ -86,6 +87,7 @@ class Mission
 			side="EMPTY";
 			vehicle="Sign_Sphere200cm_F";
 			skill=0.60000002;
+			text="Sphere1";
 		};
 		class Item3
 		{
@@ -94,6 +96,7 @@ class Mission
 			side="EMPTY";
 			vehicle="Sign_Sphere200cm_F";
 			skill=0.60000002;
+			text="Sphere2";
 		};
 		class Item4
 		{
@@ -102,6 +105,7 @@ class Mission
 			side="EMPTY";
 			vehicle="Sign_Sphere200cm_F";
 			skill=0.60000002;
+			text="Sphere3";
 		};
 	};
 	class Markers

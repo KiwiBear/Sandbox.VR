@@ -4,3 +4,12 @@ author ="Rotter&Lyud";
 onLoadName = "Arma 3 Sandbox";
 onLoadMission = "A simple testing environment for learning and outright experimentation";
 loadScreen = "pictures\intro.paa";
+
+/**
+ * Need it for content acces of mission.sqm
+ * https://community.bistudio.com/wiki/missionConfigFile
+ */
+class MissionSQM
+{
+	#include "mission.sqm"
+};
