@@ -1,7 +1,7 @@
 // https://community.bistudio.com/wiki/Description.ext
 dev = "Rotter&Lyud";
 author ="Rotter&Lyud";
-onLoadName = "Arma 4 Sandbox";
+onLoadName = "Arma 3 Sandbox";
 onLoadMission = "A simple testing environment for learning and outright experimentation";
 loadScreen = "pictures\intro.paa";
 
