@@ -303,35 +303,95 @@ sandbox_playerMarkerPosition =
 };
 
 
-/** 
- * Spawns a simple helicrash like DayZ (marker optional)
- */
-sandbox_spawnHeliCrash = 
+
+/*
+ 	Description:
+ 	Spawns a DayZ Helicrash in a specific circular zone
+ 
+ 	Paramater(s):
+ 		_this select 0: ARRAY -  Position of the center pf the zone
+ 		_this select 1: SCALAR - Min distance from position
+ 		_this select 2: SCALAR - Max distance from position
+ 		_this select 3: BOOLEAN (Optional) - If big smoke attached to helicrash is visible or not. By defaults is TRUE
+ 		_this select 4: BOOLEAN (Optional) - mark on the map where is the helicrash. By default is TRUE. Draws an red ELLIPSE 
+
+	Returns: Helicrash Wreck Object
+
+	USAGE: _heliCrashObj = [getPos player, 10, 200] call SB_fnc_spawnHelicrash;
+
+	TODO:
+*/
+SB_fnc_spawnHelicrash =
 {
-	private ["_location", "_markedPosition"];
-
+	private ["_location", "_min", "_max", "_smoke", "_marked"];
 	_location = _this select 0;
-	_markedPosition = _this select 1;
+	_min = _this select 1;
+	_max = _this select 2;
+	_smoke = if (count _this > 3) then { _this select 3 } else { true };
+	_marked = if (count _this > 4) then { _this select 4} else { true };
 
-	if (_markedPosition) then {
-		_marker = createMarker["helimarker", _location];
-		_marker setMarkerShape "ICON";
-		_marker setMarkerType "o_air";
-		_marker setMarkerColor "ColorRed";
-		_marker setMarkerText "HeliCrash";
-		missionNamespace setVariable ["marker", _marker];
-	} else {
-		missionNamespace setVariable ["marker", nil];
+
+	_posHeliCrash = [_location, _min, _max, 10, 0, 25, 0] call BIS_fnc_findSafePos;
+	_heliCrashObj = "Land_UWreck_Heli_Attack_02_F" createVehicle _posHeliCrash;
+	_heliCrashObj setVectorDir [random 1, random 1, 0];
+
+	if (_smoke) then {
+		_smokeObj = "test_EmptyObjectForSmoke" createVehicle [0, 0, 0];
+		_smokeObj attachTo [_heliCrashObj, [2, 0, 0.025]];
+		_heliCrashObj setVariable ["smoke", _smoke];
 	};
 
-	_heliCrash = "Land_UWreck_Heli_Attack_02_F" createVehicle _location;
-	_heliCrash setVectorDir [1, 0.3, 0];
-	_smoke = "test_EmptyObjectForSmoke" createVehicle [0, 0, 0];
-	_smoke attachTo [_heliCrash, [2, 0, 0.025]];
-	_heliCrash setVariable ["effects", _smoke, true];
-	missionNamespace setVariable ["heliCrash", _heliCrash];
+	if (_marked) then {
+		_marker = createMarkerLocal[format ["helimarker%1", ceil random 9999], _posHeliCrash];
+		_marker setMarkerShapeLocal "ELLIPSE";
+		_marker setMarkerColorLocal "ColorRed";
+		_marker setMarkerAlphaLocal 0.75;
+		_marker setMarkerSizeLocal [150, 150];
+		_marker setMarkerTextLocal "HeliCrash";
+		_heliCrashObj setVariable ["marker", _marker];
+	};
+
+	// Returns the helicrash Object 
+	_heliCrashObj
 };
 
+/*
+ 	Description:
+ 	Remove a DayZ Helicrash (include smoke and marker)
+ 
+ 	Paramater(s):
+ 		_this select 0: OBJECT - Helicrash Vehicle Object
+
+	Returns: Nothing
+
+	USAGE: [_heliCrashObj] call SB_fnc_removeHelicrash;
+
+	TODO: Bug if marker is null and function doesn't check it?
+	
+*/
+SB_fnc_removeHelicrash =
+{
+	private ["_helicrashObj"];
+
+	_helicrashObj = _this select 0;
+
+	// delete marker 
+	_marker = _heliCrashObj getVariable ("marker");
+	deleteMarkerLocal _marker; 
+	// deleteMarkerLocal format["%1", _heliCrashObj getVariable ("marker")]};
+
+	// delete smoke particles object
+	if (_heliCrashObj getVariable ("smoke")) then {
+		{
+			if (typeOf _x == "#particlesource") then { 
+				deleteVehicle _x;
+			};	
+		} forEach (_heliCrashObj nearObjects 3);
+	};
+
+	// delete wreck chopper
+	deleteVehicle _helicrashObj;
+};
 
 /**
  * A simple teleport Map Click position
