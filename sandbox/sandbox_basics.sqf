@@ -18,43 +18,7 @@ sandbox_spawnBlueForUnits =
 	// group player selectLeader player;
 };
 
-/**
- * Create a simple opfor group of 4 units chasing Player 
- * 
-*/
 
-sandbox_spawnOpForUnits = 
-{
-	// spawn a simple enemy group close to player
-	_pos =  [getPos player, 50, 125, 75, 0, 35, 0] call BIS_fnc_findSafePos;	
-	// https://community.bistudio.com/wiki/createUnit
-	_groupEast = createGroup east;
-
-	_opfor0 = _groupEast createUnit ["O_Soldier_F", _pos, [], 100, "FORM"];
-	sleep 0.25;
-	_opfor1 = _groupEast createUnit ["O_Soldier_AA_F", _pos, [], 100, "FORM"];
-	sleep 0.25;
-	_opfor2 = _groupEast createUnit ["O_G_officer_F", _pos, [], 100, "FORM"];
-	sleep 0.25;
-	_opfor3 = _groupEast createUnit ["O_soldierU_medic_F", _pos, [], 100, "FORM"];
-	sleep 0.25;
-
-	// http://forums.bistudio.com/showthread.php?119376-Making-enemy-units-chase-player&highlight=chase
-	
-	while {true} do {
-		// https://community.bistudio.com/wiki/leader
-		leader _groupEast doMove (getPos player);
-		sleep 1.5;
-		{
-		  if (!alive _x) then {
-		  	hintSilent format ["Left %1 enemies to kill", count units _groupEast];
-		  	deleteVehicle _x;
-		  }
-		} forEach units _groupEast;
-
-		if (count units _groupEast == 0) exitWith {};	
-	};
-};
 
 
 
@@ -362,7 +326,7 @@ SB_fnc_spawnHelicrash =
  	Paramater(s):
  		_this select 0: OBJECT - Helicrash Vehicle Object
 
-	Returns: Nothing
+	Returns: NONE
 
 	USAGE: [_heliCrashObj] call SB_fnc_removeHelicrash;
 
@@ -393,45 +357,281 @@ SB_fnc_removeHelicrash =
 	deleteVehicle _helicrashObj;
 };
 
+
 /**
  * A simple teleport Map Click position
  * onMapSingleClick
  * https://community.bistudio.com/wiki/onMapSingleClick
  */
+/*
+ 	Description:
+ 	A simple teleport Map Click position
+ 
+ 	Paramater(s): NONE
 
-sandbox_mapTeleport = 
+	Returns: NONE
+
+	USAGE: [] call SB_fnc_mapTeleport;
+
+	TODO: Okay, it's a silly function... maybe needs to see how others have implemented it ;)
+*/
+SB_fnc_mapTeleport =
 {	
-	hint format ["%1 can teleport. Do one click a position on Map close to the Helicopter", name player];
 	onMapSingleClick "vehicle player setPos _pos; true;";
-
-	_marker = missionNamespace getVariable ("marker");
-	if (!isNil "_marker") then { deleteMarker _marker };
-
-	// Issue to delete particles effects like smoke or fire attached to vehicles	
-	// http://forums.bistudio.com/showthread.php?165184-Delete-Fire-Effect/page2
-	_heliCrash = missionNamespace getVariable ("heliCrash");
-	// _effects = _heliTransport getVariable ("effects");
-	{
-		if (typeOf _x == "#particlesource") then 
-		{ 
-			deleteVehicle _x
-		}
-	} forEach (_heliCrash nearObjects 3);
-	// deleteVehicle _effects;
-	deleteVehicle _heliCrash;
 };	
-/**
- * Return to the starter position defined at init.sqf
- */
 
-sandbox_returnStartPosition = 
+
+/*
+ 	Description:
+ 	Spawn a trigger given a location. Shows a shape marker for now
+ 
+ 	Paramater(s):
+ 		_this select 0: Center location of the trigger
+ 		_this select 1: min radius of trigger
+ 		_this select 2: max radius of trigger
+ 		_this select 3: time trigger is active
+
+	Returns: NONE
+
+	USAGE: [position player, 50, 75, 100] spawn SB_fnc_spawnRandomTrigger;
+
+	TODO: 
+		- Maybe you can pass a list of actions when trigger is active
+		- Debug option to show/hide marker
+*/
+
+SB_fnc_spawnRandomTrigger = 
+{
+	private["_trigger, _originPos", "_minRadius", "_maxRadius", "_timeDuration"];
+
+	_originPos = _this select 0;
+	_minRadius = _this select 1;
+	_maxRadius = _this select 2;
+	_timeDuration = (_this select 3) + time;
+
+	hint format ["_timeDuration: %1", _timeDuration];
+
+	// give a simple random to _originPos, _minRadius and _maxRadius
+	
+	_xpos = (_originPos select 0) + 150 + random 100; 
+	_ypos = (_originPos select 1) + 150 + random 100; 
+
+	_originPos set [0, _xpos];
+	_originPos set [1, _ypos];
+
+	_minRadius = _minRadius + 25 + random 100;
+	_maxRadius = _maxRadius + 75 + random 100;
+
+	_radius = (_minRadius + _maxRadius) / 2;
+
+	_trigger = createTrigger["EmptyDetector", _originPos];
+	_trigger setTriggerArea [_radius, _radius, 0, false];
+	_trigger setTriggerActivation ["WEST", "PRESENT", false];
+	_trigger setTriggerStatements [
+		"player in thislist",
+		format [
+			// test a simple function 
+			"[%1, %2, %3, 5] spawn SB_fnc_spawnRandomEastUnits;",
+			_originPos, _minRadius, _maxRadius
+		],
+		""
+	];
+
+	// draw a shape marker for a debug purposes
+	_markerTrigger = createMarkerLocal[format ["trigger%1", ceil random 9999], _originPos];
+	_markerTrigger setMarkerShapeLocal "ELLIPSE";
+	_markerTrigger setMarkerBrushLocal "Grid";
+	_markerTrigger setMarkerColorLocal "ColorRed";
+	_markerTrigger setMarkerAlphaLocal 0.75;
+	_markerTrigger setMarkerSizeLocal [_radius, _radius];
+
+	// remove trigger and marker after an amount of time
+	while {alive player} do 
+	{
+		if (time > _timeDuration) then
+		{
+			hint "Trigger removed";
+			deleteVehicle _trigger;
+			deleteMarkerLocal _markerTrigger; 
+		};
+		sleep 1; 
+	};
+
+
+
+
+};
+
+
+/*
+ 	Description:
+ 	Spawn a basic random EAST unit within a time frequency (defined by _spawn_time)
+ 
+ 	Paramater(s):
+ 		_this select 0: ARRAY - center of spawn
+ 		_this select 1: SCALAR - min start distance from the center
+		_this select 2: SCALAR - max distance from the center
+		_this select 3: SCALAR - Wait time before spawns another unit
+
+	Returns: NONE
+
+	USAGE: [position player, 20, 40, 60] spawn SB_fnc_spawnRandomEastUnits;
+
+	TODO: 
+		- Instead of a simple unit, maybe it will be better a group
+		- Waypoints
+		- Better AI skills
+		- Customize gears
+		- Despawn after a time without contact with players
+	
+*/
+
+SB_fnc_spawnRandomEastUnits = 
 {
 
-	[[4000.0015,4099.8701], true] call sandbox_spawnHeliCrash;
+	private ["_spawnOrigin", "_startDistance", "_maxDistance", "_spawn_time", "_odds", "_bkpOrigin"];
 
-	hint "Added a new action to go back to the start point";
-	player addAction ["Go back to the start point", {
-		vehicle player setPos startPlayerPosition;
-	}];
+	// location reference to spawn the unit
+	_spawnOrigin = _this select 0;
+	_bkpOrigin = _spawnOrigin;
+	// minimum spawn distance from the trigger point
+	_startDistance = _this select 1;
+	// maximum spawn distance from the trigger point
+	_maxDistance = _this select 2;
+	// wait time until spawns another unit
+	_wait_time = _this select 3;
+
+	_sleep_delay = random _odds;
+
+
+	_kgroup = createGroup east;
+	// Rifleman
+	_krifleman = [
+		"O_G_Soldier_F",
+		"O_G_Soldier_lite_F",
+		"O_G_Soldier_AR_F",
+		"O_G_Soldier_LAT_F",
+		"o_g_soldier_unarmed_f",
+		"O_Soldier_02_F",
+		"O_Soldier_F",
+		"O_Soldier_lite_F",
+		"O_Soldier_AR_F",
+		"O_Soldier_LAT_F",
+		"O_Soldier_AAR_F",
+		"O_soldierU_F",
+		"O_soldierU_AR_F",
+		"O_soldierU_LAT_F"
+	];
+
+	_kleader = [
+		"O_G_Soldier_SL_F",
+		"O_G_Soldier_TL_F",
+		"O_Soldier_SL_F",
+		"O_Soldier_TL_F",
+		"O_diver_TL_F",
+		"O_recon_TL_F",
+		"O_soldierU_TL_F"
+	];
+	
+	_odds = random (20); // odd deviation number
+	_wait_time = _wait_time + _odds;
+	
+	// determine skill level of units
+	// at the moment, they're veterans
+	
+	_skill_levels_unit = [0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9];
+	_skill_levels_group = ["Novice", "Rookie", "Rookie", "Recruit", "Recruit", "Veteran", "Veteran", "Expert"];
+
+	// a simple random location defined by some random operations
+
+	hint format ["_wait_time: %1", _wait_time];
+	
+	while {alive player} do
+	{
+		if (time > _wait_time)	then 
+		{
+			_xpos = _spawnOrigin select 0;
+			_ypos = _spawnOrigin select 1;
+			_zpos = _spawnOrigin select 2;
+
+			_distance = _startDistance + random (_maxDistance - _startDistance);
+
+			_angle = random 360;
+
+			_xxpos = (_distance * cos _angle);
+			_yypos = (_distance * sin _angle);
+
+			_xpos = _xpos + _xxpos;
+			_ypos = _ypos + _yypos;
+
+			_spawnOrigin set [0, _xpos];
+			_spawnOrigin set [1, _ypos];
+			_spawnOrigin set [2, _zpos];
+
+			_man = _krifleman call BIS_fnc_selectRandom; 
+			_skill_level = _skill_levels_unit call BIS_fnc_selectRandom;
+
+			//_spawnOrigin = [_spawnOrigin, 1.5, 10.5, 5.0, 0, 1.5, 0] call BIS_fnc_findSafePos;
+			_man createUnit [_spawnOrigin, _kgroup, "this allowFleeing 0", _skill_level, "Private"];
+			
+			// how far is unit enemy from player 
+			/*
+			_bckspawnOrigin = _spawnOrigin;
+			_spawnOrigin set [0, _xpos - (position player select 0)];
+			_spawnOrigin set [1, _ypos - (position player select 1)];
+			_spawnOrigin set [2, _zpos - (position player select 2)];
+			_spawnOrigin = _bckspawnOrigin;
+			*/
+
+			// search a safe position
+
+			hint format ["Spawn a new EAST %1 with skills %2 at %3 (%4)", _man, _skill_level, _spawnOrigin, time];
+
+			_wait_time = _wait_time + _odds;
+			_spawnOrigin = _bkpOrigin;
+		};
+		sleep _sleep_delay;	
+	};	
 };
+	
+	
+
+
+	/*
+
+	// spawn a simple enemy group close to player
+	_pos =  [getPos player, 50, 125, 75, 0, 35, 0] call BIS_fnc_findSafePos;	
+	// https://community.bistudio.com/wiki/createUnit
+	_groupEast = createGroup east;
+
+	_opfor0 = _groupEast createUnit ["O_Soldier_F", _pos, [], 100, "FORM"];
+	sleep 0.25;
+	_opfor1 = _groupEast createUnit ["O_Soldier_AA_F", _pos, [], 100, "FORM"];
+	sleep 0.25;
+	_opfor2 = _groupEast createUnit ["O_G_officer_F", _pos, [], 100, "FORM"];
+	sleep 0.25;
+	_opfor3 = _groupEast createUnit ["O_soldierU_medic_F", _pos, [], 100, "FORM"];
+	sleep 0.25;
+
+	// http://forums.bistudio.com/showthread.php?119376-Making-enemy-units-chase-player&highlight=chase
+	
+	while {true} do {
+		// https://community.bistudio.com/wiki/leader
+		leader _groupEast doMove (getPos player);
+		sleep 1.5;
+		{
+		  if (!alive _x) then {
+		  	hintSilent format ["Left %1 enemies to kill", count units _groupEast];
+		  	deleteVehicle _x;
+		  }
+		} forEach units _groupEast;
+
+		if (count units _groupEast == 0) exitWith {};	
+	};
+	*/
+
+
+
+
+
 

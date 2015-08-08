@@ -26,6 +26,6 @@ if (IsServer) then {
 
 
 // https://community.bistudio.com/wiki/cutText
-9999 cutText ["Welcome to ArmA 3 Sandbox, please follow the instructions", "PLAIN", 1, true];
+// 9999 cutText ["Welcome to ArmA 3 Sandbox, please follow the instructions", "PLAIN", 1, true];
 
 #include "sandbox\sandbox_start.sqf";
