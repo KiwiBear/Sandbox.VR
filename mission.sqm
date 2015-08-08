@@ -3,37 +3,50 @@ class Mission
 {
 	addOns[]=
 	{
-		"map_vr",
 		"A3_Characters_F_BLUFOR",
 		"a3_characters_f",
-		"A3_Misc_F_Helpers",
-		"A3_Structures_F_Heli_VR_Helpers"
+		"A3_Structures_F_Civ_Lamps",
+		"A3_Structures_F_Households_House_Big02",
+		"A3_Structures_F_Households_House_Small01",
+		"A3_Structures_F_Households_House_Small02",
+		"A3_Structures_F_Households_House_Big01",
+		"A3_Structures_F_Households_House_Small03",
+		"A3_Structures_F_Households_Addons",
+		"map_vr"
 	};
 	addOnsAuto[]=
 	{
 		"A3_Characters_F_BLUFOR",
 		"a3_characters_f",
-		"A3_Structures_F_Heli_VR_Helpers",
-		"A3_Misc_F_Helpers",
+		"A3_Structures_F_Civ_Lamps",
+		"A3_Structures_F_Households_House_Big02",
+		"A3_Structures_F_Households_House_Small01",
+		"A3_Structures_F_Households_House_Small02",
+		"A3_Structures_F_Households_House_Big01",
+		"A3_Structures_F_Households_House_Small03",
+		"A3_Structures_F_Households_Addons",
 		"map_vr"
 	};
-	randomSeed=4564608;
+	randomSeed=64887;
 	class Intel
 	{
-		timeOfChanges=1800.0002;
 		startWeather=0;
-		startWind=0.1;
-		startWaves=0.1;
+		startWind=0;
+		startLightnings=0.041293301;
+		startWaves=0.099999994;
 		forecastWeather=0;
-		forecastWind=0.1;
-		forecastWaves=0.1;
-		forecastLightnings=0.1;
+		forecastWind=0;
+		forecastWaves=0.099999994;
+		rainForced=1;
+		lightningsForced=1;
+		wavesForced=1;
+		windForced=1;
 		year=2035;
 		day=28;
-		hour=13;
-		minute=37;
-		startFogDecay=0.0049999999;
-		forecastFogDecay=0.0049999999;
+		hour=9;
+		minute=50;
+		startFogDecay=0.0049333;
+		forecastFogDecay=0.0049333;
 	};
 	class Groups
 	{
@@ -46,13 +59,15 @@ class Mission
 				items=1;
 				class Item0
 				{
-					position[]={3999.6748,5,3999.7427};
+					position[]={3983.0801,5,4015.511};
+					azimut=179.353;
+					offsetY=0.00143909;
 					id=0;
 					side="WEST";
 					vehicle="B_Soldier_F";
 					player="PLAYER COMMANDER";
 					leader=1;
-					skill=0.60000002;
+					skill=1;
 					text="Player";
 				};
 			};
@@ -60,181 +75,329 @@ class Mission
 	};
 	class Vehicles
 	{
-		items=5;
+		items=36;
 		class Item0
 		{
-			position[]={4000.0557,5,4016.6406};
+			position[]={4002.47,0,3966.3101};
 			id=1;
 			side="EMPTY";
-			vehicle="Sign_Sphere200cm_F";
+			vehicle="Land_LampStreet_small_F";
 			skill=0.60000002;
-			text="Sphere0";
 		};
 		class Item1
 		{
-			position[]={4000.0234,5,4004.9614};
-			offsetY=2;
+			position[]={3958.6899,0,3996.9399};
 			id=2;
 			side="EMPTY";
-			vehicle="Sign_Arrow_Large_F";
+			vehicle="Land_LampStreet_small_F";
 			skill=0.60000002;
-			text="Arrow";
 		};
 		class Item2
 		{
-			position[]={4000,5,4005};
+			position[]={3997.6499,0,3983.27};
+			azimut=340.423;
+			offsetY=4.7683699e-007;
 			id=3;
 			side="EMPTY";
-			vehicle="Sign_Sphere200cm_F";
+			vehicle="Land_d_House_Big_02_V1_F";
 			skill=0.60000002;
-			text="Sphere1";
 		};
 		class Item3
 		{
-			position[]={3995.8796,5,4010.6919};
+			position[]={3984.27,1.06345,3970.3799};
+			azimut=36.856899;
+			offsetY=1.06345;
 			id=4;
 			side="EMPTY";
-			vehicle="Sign_Sphere200cm_F";
+			vehicle="Land_u_House_Small_01_V1_F";
 			skill=0.60000002;
-			text="Sphere2";
 		};
 		class Item4
 		{
-			position[]={3995.072,5,4021.8081};
+			position[]={4028.1499,0,3999.8601};
+			azimut=341.71301;
 			id=5;
 			side="EMPTY";
-			vehicle="Sign_Sphere200cm_F";
+			vehicle="Land_u_House_Small_02_V1_F";
 			skill=0.60000002;
-			text="Sphere3";
-		};
-	};
-	class Markers
-	{
-		items=7;
-		class Item0
-		{
-			position[]={4000.4077,5,4000.6064};
-			name="base";
-			text="Start";
-			type="mil_flag";
-		};
-		class Item1
-		{
-			position[]={4001.6697,5,4016.6738};
-			name="UnitTesting 1_2";
-			text="[] call sandbox_mapTeleport;";
-			type="mil_arrow";
-			angle=-91.113098;
-		};
-		class Item2
-		{
-			position[]={4002.5205,5,4004.8462};
-			name="UnitTesting 1_1_1";
-			text="[] call sandbox_returnStartPosition;";
-			type="mil_arrow";
-			angle=-91.113098;
-		};
-		class Item3
-		{
-			position[]={3997.5767,5,4010.6885};
-			name="UnitTesting 1_3";
-			text="0 = [] spawn sandbox_playerMarkerPosition;";
-			type="mil_arrow";
-			angle=-91.113098;
-		};
-		class Item4
-		{
-			position[]={3996.686,5,4021.8413};
-			name="UnitTesting 1_2_1";
-			text="[] call sandbox_mapTeleport;";
-			type="mil_arrow";
-			angle=-91.113098;
 		};
 		class Item5
 		{
-			position[]={2627.6404,5,5366.0269};
-			name="EastBASE";
-			text="EastBASE";
-			type="mil_flag";
-			a=2;
-			b=2;
+			position[]={4016.51,0,3989.27};
+			azimut=22.6744;
+			id=6;
+			side="EMPTY";
+			vehicle="Land_i_House_Small_02_V1_F";
+			skill=0.60000002;
 		};
 		class Item6
 		{
-			position[]={5806.7549,5,2769.6406};
-			name="WestBASE";
-			text="WestBASE";
-			type="mil_flag";
-			a=2;
-			b=2;
+			position[]={4025.1399,0,3991.3101};
+			id=7;
+			side="EMPTY";
+			vehicle="Land_LampStreet_small_F";
+			skill=0.60000002;
 		};
-	};
-	class Sensors
-	{
-		items=4;
-		class Item0
+		class Item7
 		{
-			position[]={4000.0703,5,4016.6772};
-			a=2;
-			b=2;
-			activationBy="WEST";
-			interruptable=1;
-			age="UNKNOWN";
-			text="UtilTesting1_3";
-			name="UtilTesting1_3";
-			expCond="player in thislist";
-			expActiv="[] call sandbox_mapTeleport; Arrow setPos [getPos UtilTesting1_4 select 0, getPos UtilTesting1_4 select 1, getPos Arrow select 2]; ";
-			class Effects
-			{
-			};
+			position[]={4007.48,0,3984.6599};
+			id=8;
+			side="EMPTY";
+			vehicle="Land_LampStreet_small_F";
+			skill=0.60000002;
 		};
-		class Item1
+		class Item8
 		{
-			position[]={4000.0132,5,4004.9272};
-			a=2;
-			b=2;
-			activationBy="WEST";
-			interruptable=1;
-			age="UNKNOWN";
-			text="UtilTesting1_1";
-			name="UtilTesting1_1";
-			expCond="player in thislist";
-			expActiv="[] call sandbox_returnStartPosition; Arrow setPos [getPos UtilTesting1_2 select 0, getPos UtilTesting1_2 select 1, getPos Arrow select 2]; ";
-			class Effects
-			{
-			};
+			position[]={3943.5024,5,3998.2996};
+			azimut=338.51968;
+			id=9;
+			side="EMPTY";
+			vehicle="Land_d_House_Big_01_V1_F";
+			skill=0.60000002;
 		};
-		class Item2
+		class Item9
 		{
-			position[]={3995.8943,5,4010.7285};
-			a=2;
-			b=2;
-			activationBy="WEST";
-			interruptable=1;
-			age="UNKNOWN";
-			text="UtilTesting1_2";
-			name="UtilTesting1_2";
-			expCond="player in thislist";
-			expActiv="0 = [] spawn sandbox_playerMarkerPosition; Arrow setPos [getPos UtilTesting1_3 select 0, getPos UtilTesting1_3 select 1, getPos Arrow select 2]; ";
-			class Effects
-			{
-			};
+			position[]={4024.8484,5,3968.7415};
+			azimut=386.90845;
+			offsetY=2.75295;
+			id=10;
+			side="EMPTY";
+			vehicle="Land_d_House_Big_02_V1_F";
+			skill=0.60000002;
 		};
-		class Item3
+		class Item10
 		{
-			position[]={3995.0867,5,4021.8447};
-			a=2;
-			b=2;
-			activationBy="WEST";
-			interruptable=1;
-			age="UNKNOWN";
-			text="UtilTesting1_4";
-			name="UtilTesting1_4";
-			expCond="player in thislist";
-			expActiv="0 = [] spawn sandbox_enemyChasePlayer;";
-			class Effects
-			{
-			};
+			position[]={3993.95,0,4007.01};
+			azimut=42.561798;
+			id=11;
+			side="EMPTY";
+			vehicle="Land_i_House_Small_03_V1_F";
+			skill=0.60000002;
+		};
+		class Item11
+		{
+			position[]={3982.74,0,4020.71};
+			id=12;
+			side="EMPTY";
+			vehicle="Land_LampStreet_small_F";
+			skill=0.60000002;
+		};
+		class Item12
+		{
+			position[]={4031.4099,0,4028.96};
+			id=13;
+			side="EMPTY";
+			vehicle="Land_i_House_Small_01_V3_F";
+			skill=0.60000002;
+		};
+		class Item13
+		{
+			position[]={4007.6899,0,4001.71};
+			azimut=224.83;
+			id=14;
+			side="EMPTY";
+			vehicle="Land_i_House_Small_01_V1_F";
+			skill=0.60000002;
+		};
+		class Item14
+		{
+			position[]={4014.9299,0,4013.02};
+			id=15;
+			side="EMPTY";
+			vehicle="Land_LampStreet_small_F";
+			skill=0.60000002;
+		};
+		class Item15
+		{
+			position[]={4034.8999,0,4017.3799};
+			azimut=331.173;
+			id=16;
+			side="EMPTY";
+			vehicle="Land_i_House_Big_02_V2_F";
+			skill=0.60000002;
+		};
+		class Item16
+		{
+			position[]={4036.9199,0,4004.8799};
+			id=17;
+			side="EMPTY";
+			vehicle="Land_LampStreet_small_F";
+			skill=0.60000002;
+		};
+		class Item17
+		{
+			position[]={4007.7107,5,4025.6343};
+			azimut=217.22243;
+			id=18;
+			side="EMPTY";
+			vehicle="Land_d_Addon_02_V1_F";
+			skill=0.60000002;
+		};
+		class Item18
+		{
+			position[]={3984.8501,0,4033.4199};
+			id=19;
+			side="EMPTY";
+			vehicle="Land_i_House_Big_01_V3_F";
+			skill=0.60000002;
+		};
+		class Item19
+		{
+			position[]={3994.7664,5,4032.0063};
+			id=20;
+			side="EMPTY";
+			vehicle="Land_LampStreet_small_F";
+			skill=0.60000002;
+		};
+		class Item20
+		{
+			position[]={4022.9299,0,4035.47};
+			id=21;
+			side="EMPTY";
+			vehicle="Land_d_Addon_02_V1_F";
+			skill=0.60000002;
+		};
+		class Item21
+		{
+			position[]={3997.2385,5,4039.6685};
+			id=22;
+			side="EMPTY";
+			vehicle="Land_d_Addon_02_V1_F";
+			skill=0.60000002;
+		};
+		class Item22
+		{
+			position[]={3956.0251,5,4037.1621};
+			azimut=97.222473;
+			id=23;
+			side="EMPTY";
+			vehicle="Land_d_Addon_02_V1_F";
+			skill=0.60000002;
+		};
+		class Item23
+		{
+			position[]={3971.7886,5,4036.5273};
+			azimut=141.87131;
+			id=24;
+			side="EMPTY";
+			vehicle="Land_d_Addon_02_V1_F";
+			skill=0.60000002;
+		};
+		class Item24
+		{
+			position[]={3965.7197,5,4018.2947};
+			azimut=304.48499;
+			id=25;
+			side="EMPTY";
+			vehicle="Land_d_House_Big_01_V1_F";
+			skill=0.60000002;
+		};
+		class Item25
+		{
+			position[]={3969.7148,5,3988.2117};
+			azimut=386.90845;
+			offsetY=2.75295;
+			id=26;
+			side="EMPTY";
+			vehicle="Land_d_House_Big_02_V1_F";
+			skill=0.60000002;
+		};
+		class Item26
+		{
+			position[]={3961.8323,5,4056.8318};
+			azimut=257.81326;
+			offsetY=2.75295;
+			id=27;
+			side="EMPTY";
+			vehicle="Land_d_House_Big_02_V1_F";
+			skill=0.60000002;
+		};
+		class Item27
+		{
+			position[]={3937.543,5,4028.6863};
+			azimut=386.90845;
+			offsetY=2.75295;
+			id=28;
+			side="EMPTY";
+			vehicle="Land_d_House_Big_02_V1_F";
+			skill=0.60000002;
+		};
+		class Item28
+		{
+			position[]={4044.9182,5,3988.2039};
+			azimut=386.90845;
+			offsetY=2.75295;
+			id=29;
+			side="EMPTY";
+			vehicle="Land_d_House_Big_02_V1_F";
+			skill=0.60000002;
+		};
+		class Item29
+		{
+			position[]={3955.4709,5,3967.5764};
+			azimut=309.73111;
+			offsetY=2.75295;
+			id=30;
+			side="EMPTY";
+			vehicle="Land_d_House_Big_02_V1_F";
+			skill=0.60000002;
+		};
+		class Item30
+		{
+			position[]={3994.4111,5,3949.6487};
+			azimut=261.80316;
+			offsetY=2.75295;
+			id=31;
+			side="EMPTY";
+			vehicle="Land_d_House_Big_02_V1_F";
+			skill=0.60000002;
+		};
+		class Item31
+		{
+			position[]={3996.5317,5,4062.614};
+			azimut=263.80334;
+			offsetY=2.75295;
+			id=32;
+			side="EMPTY";
+			vehicle="Land_d_House_Big_02_V1_F";
+			skill=0.60000002;
+		};
+		class Item32
+		{
+			position[]={4025.8337,5,4057.9871};
+			azimut=502.90707;
+			offsetY=2.75295;
+			id=33;
+			side="EMPTY";
+			vehicle="Land_d_House_Big_02_V1_F";
+			skill=0.60000002;
+		};
+		class Item33
+		{
+			position[]={4058.9907,5,4024.4456};
+			azimut=370.07349;
+			offsetY=2.75295;
+			id=34;
+			side="EMPTY";
+			vehicle="Land_d_House_Big_02_V1_F";
+			skill=0.60000002;
+		};
+		class Item34
+		{
+			position[]={4011.8857,5,4041.4995};
+			azimut=141.87131;
+			id=35;
+			side="EMPTY";
+			vehicle="Land_d_Addon_02_V1_F";
+			skill=0.60000002;
+		};
+		class Item35
+		{
+			position[]={4012.4207,5,4031.4097};
+			id=36;
+			side="EMPTY";
+			vehicle="Land_LampStreet_small_F";
+			skill=0.60000002;
 		};
 	};
 };
@@ -248,23 +411,14 @@ class Intro
 	{
 		"map_vr"
 	};
-	randomSeed=6629457;
+	randomSeed=64887;
 	class Intel
 	{
-		timeOfChanges=1800.0002;
-		startWeather=0;
 		startWind=0.1;
-		startWaves=0.1;
-		forecastWeather=0;
 		forecastWind=0.1;
 		forecastWaves=0.1;
-		forecastLightnings=0.1;
-		year=2035;
-		day=28;
-		hour=13;
-		minute=37;
-		startFogDecay=0.0049999999;
-		forecastFogDecay=0.0049999999;
+		startFogDecay=0.0049333;
+		forecastFogDecay=0.0049333;
 	};
 };
 class OutroWin
@@ -277,23 +431,14 @@ class OutroWin
 	{
 		"map_vr"
 	};
-	randomSeed=16298089;
+	randomSeed=64887;
 	class Intel
 	{
-		timeOfChanges=1800.0002;
-		startWeather=0;
 		startWind=0.1;
-		startWaves=0.1;
-		forecastWeather=0;
 		forecastWind=0.1;
 		forecastWaves=0.1;
-		forecastLightnings=0.1;
-		year=2035;
-		day=28;
-		hour=13;
-		minute=37;
-		startFogDecay=0.0049999999;
-		forecastFogDecay=0.0049999999;
+		startFogDecay=0.0049333;
+		forecastFogDecay=0.0049333;
 	};
 };
 class OutroLoose
@@ -306,22 +451,13 @@ class OutroLoose
 	{
 		"map_vr"
 	};
-	randomSeed=15801878;
+	randomSeed=64887;
 	class Intel
 	{
-		timeOfChanges=1800.0002;
-		startWeather=0;
 		startWind=0.1;
-		startWaves=0.1;
-		forecastWeather=0;
 		forecastWind=0.1;
 		forecastWaves=0.1;
-		forecastLightnings=0.1;
-		year=2035;
-		day=28;
-		hour=13;
-		minute=37;
-		startFogDecay=0.0049999999;
-		forecastFogDecay=0.0049999999;
+		startFogDecay=0.0049333;
+		forecastFogDecay=0.0049333;
 	};
 };
