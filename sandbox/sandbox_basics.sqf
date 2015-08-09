@@ -383,83 +383,120 @@ SB_fnc_mapTeleport =
 
 /*
  	Description:
- 	Spawn a trigger given a location. Shows a shape marker for now
  
  	Paramater(s):
- 		_this select 0: Center location of the trigger
- 		_this select 1: min radius of trigger
- 		_this select 2: max radius of trigger
- 		_this select 3: time trigger is active
 
 	Returns: NONE
 
-	USAGE: [position player, 50, 75, 100] spawn SB_fnc_spawnRandomTrigger;
+	USAGE: [] spawn SB_fnc_SimpleTrigger;
 
 	TODO: 
-		- Maybe you can pass a list of actions when trigger is active
-		- Debug option to show/hide marker
+
 */
 
-SB_fnc_spawnRandomTrigger = 
+SB_fnc_SimpleTrigger = 
 {
-	private["_trigger, _originPos", "_minRadius", "_maxRadius", "_timeDuration"];
 
-	_originPos = _this select 0;
-	_minRadius = _this select 1;
-	_maxRadius = _this select 2;
-	_timeDuration = (_this select 3) + time;
+	// some trigger values
+	_radius = 125;
+	_timeDuration = 10;
 
-	hint format ["_timeDuration: %1", _timeDuration];
+	// set trigger location
+	_posTrigger = getPos player;
+	_xPos = _posTrigger select 0;
+	_yPos = _posTrigger select 1;
+	_xPos = _xPos + (random 500) - 250;
+	_yPos = _yPos + (random 500) - 250;
+	_posTrigger set [0, _xPos];
+	_posTrigger set [1, _yPos];
 
-	// give a simple random to _originPos, _minRadius and _maxRadius
-	
-	_xpos = (_originPos select 0) + 150 + random 100; 
-	_ypos = (_originPos select 1) + 150 + random 100; 
-
-	_originPos set [0, _xpos];
-	_originPos set [1, _ypos];
-
-	_minRadius = _minRadius + 25 + random 100;
-	_maxRadius = _maxRadius + 75 + random 100;
-
-	_radius = (_minRadius + _maxRadius) / 2;
-
-	_trigger = createTrigger["EmptyDetector", _originPos];
-	_trigger setTriggerArea [_radius, _radius, 0, false];
-	_trigger setTriggerActivation ["WEST", "PRESENT", false];
-	_trigger setTriggerStatements [
-		"player in thislist",
-		format [
-			// test a simple function 
-			"[%1, %2, %3, 5] spawn SB_fnc_spawnRandomEastUnits;",
-			_originPos, _minRadius, _maxRadius
-		],
-		""
-	];
-
-	// draw a shape marker for a debug purposes
-	_markerTrigger = createMarkerLocal[format ["trigger%1", ceil random 9999], _originPos];
+	// lets draw a mark for our trigger for debug purposes
+	_markerTrigger = createMarkerLocal[format ["trigger%1", ceil random 9999], _posTrigger];
 	_markerTrigger setMarkerShapeLocal "ELLIPSE";
-	_markerTrigger setMarkerBrushLocal "Grid";
-	_markerTrigger setMarkerColorLocal "ColorRed";
-	_markerTrigger setMarkerAlphaLocal 0.75;
+	_markerTrigger setMarkerBrushLocal "SolidBorder";
+	_markerTrigger setMarkerColorLocal "ColorBlue";
+	_markerTrigger setMarkerAlphaLocal 0.65;
 	_markerTrigger setMarkerSizeLocal [_radius, _radius];
 
-	// remove trigger and marker after an amount of time
-	while {alive player} do 
-	{
-		if (time > _timeDuration) then
-		{
-			hint "Trigger removed";
-			deleteVehicle _trigger;
-			deleteMarkerLocal _markerTrigger; 
+
+	// different ways to activate a trigger
+	// 1. Attach to a player of a vehicle object (need "this" on first setTriggerStatements) and no need of setTriggerActivation
+	// _trigger triggerAttachVehicle [player];
+	// 2. Set an activation (player get inside trigger)
+	// _trigger setTriggerActivation ["VEHICLE", "PRESENT", true];
+
+	_trigger = createTrigger["EmptyDetector", _posTrigger];
+	_trigger setTriggerArea [_radius, _radius, 0, false];
+	_trigger setTriggerActivation ["ANY", "NOT PRESENT", true];
+	_trigger setTriggerTimeout[_timeDuration, _timeDuration, _timeDuration, false];
+	_trigger setTriggerStatements [
+		"not(player in thislist)",
+		"hint 'Trigger is on'; [thisTrigger] spawn SB_fnc_damagePlayer;",
+		"hint 'Trigger is off'"
+	];
+
+
+	// countdown before trigger is on!
+	0 = _trigger spawn {
+
+		// Triggers have their own schedule. If you create a trigger with timeout and try to read triggerTimeoutCurrent immediately it will return -1. This is because the countdown will not start until the next scheduled trigger check is due, and this could take up to 0.5 seconds.
+		waitUntil { triggerTimeoutCurrent _this > 0 };
+		//waitUntil { triggerTimeoutCurrent _this > 0 && triggerTimeoutCurrent _this <= (floor _timeDuration / 2 ) } exitWith { deleteMarkerLocal _markerTrigger};
+		waitUntil {
+		  if (floor triggerTimeoutCurrent _this <= 0) exitWith {true};
+		  hintSilent parseText format [
+	        "<t size='10' color='#ffff00' shadow='2'>%1</t>",
+	        floor triggerTimeoutCurrent _this
+	    	];
+	    	false
 		};
-		sleep 1; 
 	};
 
+	// update radius every 10 seconds
+	while {true} do 
+	{
+		sleep 10;
+		hint "Update Zone";
+		_radius = _radius - 5;
+		_trigger setTriggerArea [_radius, _radius, 0, false];
+		_markerTrigger setMarkerSizeLocal [_radius, _radius];
+	};
+};
 
+/*
+Simple damage script to player.
+*/
 
+SB_fnc_damagePlayer = 
+{
+	private ["_trigger","_inrcreaseDamage", "_damageBase"];
 
+	_trigger = _this select 0;
+	_inrcreaseDamage = 0.1;
+	_damageBase = damage player;
+
+	//hint "Player is afected by an infection!";
+	
+	while {alive player} do 
+	{
+		// display damage player
+		hintSilent parseText format [
+            "<t size='5' color='#ff0000' shadow='2'>%1</t>",
+            damage player
+        	];
+        // if player enters the safe zone trigger is off
+		if (not(triggerActivated _trigger)) exitWith {};
+
+		// player explodes (and dead) if damage is too high
+		if ((damage player) > 0.85) then {
+			"HelicopterExploSmall" createVehicle position player;
+		};
+		// increase the damage and set to player
+		_damageBase = (damage player) + _inrcreaseDamage;
+		player setDamage _damageBase;
+
+		sleep 5; //time frequency increase damage value
+	};
 };
 
 
@@ -478,6 +515,7 @@ SB_fnc_spawnRandomTrigger =
 	USAGE: [position player, 20, 40, 60] spawn SB_fnc_spawnRandomEastUnits;
 
 	TODO: 
+		- Add exitwith to escape of a infinite spawn of units
 		- Instead of a simple unit, maybe it will be better a group
 		- Waypoints
 		- Better AI skills
@@ -489,7 +527,7 @@ SB_fnc_spawnRandomTrigger =
 SB_fnc_spawnRandomEastUnits = 
 {
 
-	private ["_spawnOrigin", "_startDistance", "_maxDistance", "_spawn_time", "_odds", "_bkpOrigin"];
+	private ["_spawnOrigin", "_startDistance", "_maxDistance", "_spawn_time", "_odds", "_bkpOrigin", "_bkpSpawnTime"];
 
 	// location reference to spawn the unit
 	_spawnOrigin = _this select 0;
@@ -534,7 +572,8 @@ SB_fnc_spawnRandomEastUnits =
 	];
 	
 	_odds = random (20); // odd deviation number
-	_wait_time = _wait_time + _odds;
+	_bkpSpawnTime = _wait_time;
+	_wait_time = time  + _wait_time + _odds;
 	
 	// determine skill level of units
 	// at the moment, they're veterans
@@ -543,10 +582,8 @@ SB_fnc_spawnRandomEastUnits =
 	_skill_levels_group = ["Novice", "Rookie", "Rookie", "Recruit", "Recruit", "Veteran", "Veteran", "Expert"];
 
 	// a simple random location defined by some random operations
-
-	hint format ["_wait_time: %1", _wait_time];
-	
-	while {alive player} do
+	// needs to rewrite: needs a exitwith {}
+	while {true} do
 	{
 		if (time > _wait_time)	then 
 		{
@@ -585,9 +622,15 @@ SB_fnc_spawnRandomEastUnits =
 
 			// search a safe position
 
-			hint format ["Spawn a new EAST %1 with skills %2 at %3 (%4)", _man, _skill_level, _spawnOrigin, time];
+			hintSilent parseText format ["<t size='2' color='#ff0000' shadow='1'>Spawn a new EAST %1 with skills %2 at %3 (%4)</t>", _man, _skill_level, _spawnOrigin, time];
 
-			_wait_time = _wait_time + _odds;
+			sleep 2;
+
+			_odds = random 60;
+			_wait_time = time + _bkpSpawnTime + _odds;
+
+			hintSilent parseText format ["<t size='2' color='#ffff00' shadow='2'>%1 seconds left for next unit spawn", floor (_wait_time - time)];
+
 			_spawnOrigin = _bkpOrigin;
 		};
 		sleep _sleep_delay;	
