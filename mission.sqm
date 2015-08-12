@@ -400,6 +400,20 @@ class Mission
 			skill=0.60000002;
 		};
 	};
+	class Sensors
+	{
+		items=1;
+		class Item0
+		{
+			position[]={4055.3435,5,4051.5518};
+			interruptable=1;
+			age="UNKNOWN";
+			name="Trigger";
+			class Effects
+			{
+			};
+		};
+	};
 };
 class Intro
 {

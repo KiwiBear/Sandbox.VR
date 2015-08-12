@@ -519,9 +519,98 @@ SB_fnc_damagePlayer =
  
  	Paramater(s):
 
+	Returns: group GROUP
+
+	USAGE:	
+		_unit = [getPos player, getPos _trigger, group player] spawn SB_fnc_spawnUnit;
+		_unit = [getPos player, getPos _trigger] spawn SB_fnc_spawnUnit;
+
+	TODO: 
+
+*/
+
+SB_fnc_spawnUnit = 
+{
+	private ["_spawnLocation", "_targetLocation", "_group", "_unit"];
+
+	// conf options
+	_minSpawnDistance = 10;
+	_maxSpawnDistance = 50;
+
+	_spawnLocation = _this select 0;
+	_targetLocation = _this select 1;
+	_group = if (count _this > 2) then {_this select 2} else {nil};
+	diag_log format ["1- _group: %1", _group];
+
+	private ["_i", "_kgroup", "_kgroups", "_kgroupsOdds", "_cnt", "_odds"];
+	_kgroups = [civilian, independent, east, west];
+	_kgroupsOdds = [100, 70, 50, 10];
+	_cnt = count _kgroups;
+	diag_log format ["_cnt: %1", _cnt];
+	_odds = random (100);
+	diag_log format ["_odds: %1", _odds];
+
+	for "_i" from 0 to (_cnt -1) do
+	{
+		if (_odds < (_kgroupsOdds select _i)) then 
+		{
+			_kgroup = _kgroups select _i;
+		};
+	};
+	diag_log format ["_kgroup: %1", _kgroup];
+
+	if (isNil "_group") then {_group = createGroup _kgroup};
+	diag_log format ["2- _group: %1", side _group];
+
+	// Kind of units (8 for each)
+	_kunitsWEST = ["B_Soldier_02_f", "B_Soldier_F", "B_Soldier_GL_F", "B_soldier_exp_F", "B_soldier_AA_F", "B_soldier_AA_F", "B_spotter_F", "B_sniper_F"];
+	_kunitsEAST = ["O_Soldier_F", "O_soldierU_F", "O_support_Mort_F", "O_G_Soldier_GL_F", "O_soldierU_AAA_F", "O_soldier_exp_F", "O_spotter_F", "O_sniper_F"];
+	_kunitsIND = ["I_G_Soldier_F", "I_G_Soldier_GL_F", "I_Soldier_M_F", "I_Soldier_AA_F", "I_Soldier_LAT_F", "I_Soldier_exp_F", "I_Spotter_F", "I_Sniper_F"];
+	_kunitsCIV = ["C_man_1", "C_man_polo_1_F_afro", "C_man_polo_2_F_euro", "C_man_p_fugitive_F_asia", "C_man_p_fugitive_F_euro", "C_man_p_fugitive_F_afro", "C_man_w_worker_F", "C_Nikos_aged"];
+
+	_kunitsOdds = [100, 90, 80, 70, 50, 30, 20, 10];
+	_kunitsGroups = [_kunitsWEST, _kunitsEAST, _kunitsIND, _kunitsCIV];
+
+	// select group depending on _group
+	private ["_i", "_odds", "_kunit", "_kunitGroup", "_cnt"];
+
+	if (side _group == west) then {_kunitGroup = _kunitsGroups select 0};
+	if (side _group == east) then {_kunitGroup = _kunitsGroups select 1};
+	if (side _group == independent) then {_kunitGroup = _kunitsGroups select 2};
+	if (side _group == civilian) then {_kunitGroup = _kunitsGroups select 3};
+
+	_cnt = count _kunitGroup;
+	diag_log format ["_kunitGroup: %1, _tmp: %2", _kunitGroup, _cnt];
+	_odds = random (100);
+	diag_log format ["_odds: %1", _odds];
+	
+	for "_i" from 0 to (_cnt - 1) do
+	{
+		if (_odds < _kunitsOdds select _i) then 
+		{
+			_kunit = _kunitGroup select _i;
+			diag_log _kunit;
+		};
+	};
+	
+	diag_log format ["Unit %1 | group %2", _kunit, _group];
+	diag_log format ["_spawnLocation: %1", _spawnLocation];
+	_kunit createUnit[_spawnLocation, _group, "this allowFleeing 0", 0.9, "Private"];
+
+	//_unit doMove _targetLocation; // not work!
+	_kunit // Return 
+};
+
+
+
+/*
+ 	Description:
+ 
+ 	Paramater(s):
+
 	Returns: NONE
 
-	USAGE: [] spawn SB_fnc_SimpleTrigger; Next open cmder and chdir to %userprofile%\AppData\Local\Arma 3 and execute "tail -f <arma3 report name file>.rpt
+	USAGE: [] spawn SB_fnc_testReportFile; Next open cmder and chdir to %userprofile%\AppData\Local\Arma 3 and execute "tail -f <arma3 report name file>.rpt
 
 	TODO: 
 
