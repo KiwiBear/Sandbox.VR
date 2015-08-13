@@ -539,12 +539,15 @@ SB_fnc_spawnUnit =
 
 	_spawnLocation = _this select 0;
 	_targetLocation = _this select 1;
+	diag_log format ["_targetLocation: %1", _targetLocation];
+
+	
 	_group = if (count _this > 2) then {_this select 2} else {nil};
 	diag_log format ["1- _group: %1", _group];
 
 	private ["_i", "_kgroup", "_kgroups", "_kgroupsOdds", "_cnt", "_odds"];
-	_kgroups = [civilian, independent, east, west];
-	_kgroupsOdds = [100, 70, 50, 10];
+	_kgroups = [civilian, independent, west, east];
+	_kgroupsOdds = [100, 70, 50, 5];
 	_cnt = count _kgroups;
 	diag_log format ["_cnt: %1", _cnt];
 	_odds = random (100);
@@ -595,10 +598,17 @@ SB_fnc_spawnUnit =
 	
 	diag_log format ["Unit %1 | group %2", _kunit, _group];
 	diag_log format ["_spawnLocation: %1", _spawnLocation];
-	_kunit createUnit[_spawnLocation, _group, "this allowFleeing 0", 0.9, "Private"];
+	// _unit = _kunit createUnit [_spawnLocation, _group, "this allowFleeing 0", 0.9, "Private"];
+	_unit = _group createUnit[_kunit, _spawnLocation, [], 5, "NONE"];
+	_unit allowFleeing 0; // https://community.bistudio.com/wiki/allowFleeing
 
-	//_unit doMove _targetLocation; // not work!
-	_kunit // Return 
+	_radius = 50;
+	_xx = _targetLocation select 0;
+	_yy = _targetLocation select 1;
+	_dir = random 360;
+	_pos = [(_xx + (random _radius) * sin _dir), (_yy + (random _radius) * cos _dir), 0];
+	_unit doMove _pos; // transform unit text in object
+	_unit // Return 
 };
 
 
