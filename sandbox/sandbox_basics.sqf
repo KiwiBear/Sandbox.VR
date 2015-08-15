@@ -520,50 +520,51 @@ SB_fnc_damagePlayer =
 
 // Deathmatch?
 
-// [100] call SB_fnc_spawnEnemyUnit;
-
-SB_fnc_spawnEnemyUnit  = 
+// [10] call SB_fnc_spawnEnemyUnit;
+// _this select 0 min number of AI players
+// _this select 1 max number of AI players
+// _this select 2 min radius
+// _this select 3 max radius
+// http://stackoverflow.com/questions/5837572/generate-a-random-point-within-a-circle-uniformly
+// [10, 100] call SB_fnc_spawnUniformRandomUnits;
+SB_fnc_spawnUniformRandomUnits  = 
 {
 	private["_xx", "_yy", "_unit", "_spawnAt", "_radius", "_count"];
 
-	_maxPlayers = _this select 0;
-	// _maxGroupsPlayers = _this select 1;
-	_maxRadius = -1000;	
-	_minRadius = -1000;
+	_numPlayers = _this select 0;
+	_maxRadius = _this select 1;	
+	// _center optional. By default give player position
+	_center = if (count _this > 2 ) then {_this select 2} else {getPos player};
 
-	_pos = getPos player;
-	_xx = _pos select 0;
-	_yy = _pos select 1;
 
-	for "_i" from 0 to (_maxPlayers - 1) do {
+	for "_i" from 0 to (_numPlayers - 1) do {
 
-		_negative = round (random 1);
-		if (_negative == 0) then {
-		  _negative = -1;
+		private ["_t", "_u", "_r"];
+		_t =  2 * pi * random (_maxRadius);
+		_u = random (_maxRadius) + random (_maxRadius);
+
+		if (_u > 1) then {
+		  _r = 2 - _u;
+		} else {
+			_r = _u;
 		};
 
-		_maxRadius = _maxRadius * _negative;
+		_posX = _r * cos _t; 
+		_posY = _r * sin _t; 
 
-		_dir = random 360;
-		_offsetX = (random _minRadius +  (_maxRadius * sin _dir)) * _negative;
-		_offsetY = (random _minRadius +  (_maxRadius * cos _dir)) * _negative;
-		diag_log _offsetX;
-		diag_log _offsetY;
+//		diag_log format ["_t: %1, _u: %2, _r: %3", _t, _u, _r];
+//		diag_log format ["_posX: %1, _posY: %2", _posX, _posY];
 
-		_spawnAt = [_xx + _offsetX , _yy + _offsetY, 0];
+		_spawnAt = [(_center select 0) + _posX, (_center select 1) + _posY, 0];
 		_unit = [_spawnAt, getPos Trigger] call SB_fnc_spawnUnit;	
 		_unit addRating -10000; // When the rating gets below -2000, the unit's side switches to "ENEMY" (sideEnemy) and the unit is attacked by everyone.
-		
 		diag_log format ["Unit: %1 spawn at: %2", _unit, _spawnAt];	
 	};
 
-	// player can be killed by everyone
-	player addRating -10000;
 	// see players marks at map
 	[] spawn sandbox_playerMarkerPosition;
+
 };
-
-
 
 
 /*
@@ -578,10 +579,8 @@ SB_fnc_spawnEnemyUnit  =
 
 	USAGE:	
 		_unit = [getPos player] call SB_fnc_spawnUnit;
-		_unit = [getPos player, group player] call SB_fnc_spawnUnit;
+		_unit = [getPos player, getPos Trigger] call SB_fnc_spawnUnit;
 		 Unit = [getPos player, getPos Trigger, group (allUnits select 0)] call SB_fnc_spawnUnit;
-		_unit = [getPos player, east, getPos _trigger] call SB_fnc_spawnUnit;
-		_unit = [getPos player, "random", getPos _trigger] call SB_fnc_spawnUnit;
 	
 	TODO: 
 
@@ -600,8 +599,8 @@ SB_fnc_spawnUnit =
 	_group = if (count _this > 2) then {_this select 2} else {nil};
 
 	private ["_i", "_kgroup", "_kgroups", "_kgroupsOdds", "_cnt", "_odds"];
-	_kgroups = [civilian, independent, west, east, sideEnemy];
-	_kgroupsOdds = [100, 70, 50, 30, 10];
+	_kgroups = [west, east, independent, civilian];
+	_kgroupsOdds = [100, 75, 50, 25];
 	_cnt = count _kgroups;
 	_odds = random (100);
 
@@ -673,7 +672,7 @@ SB_fnc_spawnUnit =
 
 	Returns: NONE
 
-	USAGE: [] spawn SB_fnc_testReportFile; Next open cmder and chdir to %userprofile%\AppData\Local\Arma 3 and execute "tail -f <arma3 report name file>.rpt
+	USAGE: [] call SB_fnc_testReportFile; Next open cmder and chdir to %userprofile%\AppData\Local\Arma 3 and execute "tail -f <arma3 report name file>.rpt
 
 	TODO: 
 
@@ -690,4 +689,3 @@ SB_fnc_testReportFile =
 		format ["_log: %1", _log]
 	];
 };
-
