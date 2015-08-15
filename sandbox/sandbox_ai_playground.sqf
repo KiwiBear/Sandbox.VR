@@ -224,7 +224,7 @@ SB_fnc_spawnRandomEastUnits =
 					};
 					// select kunit 
 					_man = _kunits select _this_unit;
-					_man createUnit [_spawn_position, _this_group, "this 	allowFleeing 0", _skill_level, "Private"];			
+					_man createUnit [_spawn_position, _this_group, "this allowFleeing 0", _skill_level, "Private"];			
 					diag_log format ["- %1", _man];
 				};
 

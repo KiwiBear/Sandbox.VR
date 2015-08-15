@@ -468,6 +468,9 @@ SB_fnc_SimpleTrigger =
 	};
 };
 
+
+
+
 /*
  	Description: A way of damaging player every n time amount
  
@@ -514,17 +517,72 @@ SB_fnc_damagePlayer =
 };
 
 
+
+// Deathmatch?
+
+// [100] call SB_fnc_spawnEnemyUnit;
+
+SB_fnc_spawnEnemyUnit  = 
+{
+	private["_xx", "_yy", "_unit", "_spawnAt", "_radius", "_count"];
+
+	_maxPlayers = _this select 0;
+	// _maxGroupsPlayers = _this select 1;
+	_maxRadius = -1000;	
+	_minRadius = -1000;
+
+	_pos = getPos player;
+	_xx = _pos select 0;
+	_yy = _pos select 1;
+
+	for "_i" from 0 to (_maxPlayers - 1) do {
+
+		_negative = round (random 1);
+		if (_negative == 0) then {
+		  _negative = -1;
+		};
+
+		_maxRadius = _maxRadius * _negative;
+
+		_dir = random 360;
+		_offsetX = (random _minRadius +  (_maxRadius * sin _dir)) * _negative;
+		_offsetY = (random _minRadius +  (_maxRadius * cos _dir)) * _negative;
+		diag_log _offsetX;
+		diag_log _offsetY;
+
+		_spawnAt = [_xx + _offsetX , _yy + _offsetY, 0];
+		_unit = [_spawnAt, getPos Trigger] call SB_fnc_spawnUnit;	
+		_unit addRating -10000; // When the rating gets below -2000, the unit's side switches to "ENEMY" (sideEnemy) and the unit is attacked by everyone.
+		
+		diag_log format ["Unit: %1 spawn at: %2", _unit, _spawnAt];	
+	};
+
+	// player can be killed by everyone
+	player addRating -10000;
+	// see players marks at map
+	[] spawn sandbox_playerMarkerPosition;
+};
+
+
+
+
 /*
- 	Description:
+ 	Description: Spawn a unit given a spawn location. Optional is side and target location
  
  	Paramater(s):
+ 		_this select 0: Position Spawn location of unit
+ 		_this select 1: Target location (Optional). If you want unit moves to a specific position
+ 		_this select 2: side or group (Optional). If not unit will be assigned a random side
 
 	Returns: group GROUP
 
 	USAGE:	
-		_unit = [getPos player, getPos _trigger, group player] spawn SB_fnc_spawnUnit;
-		_unit = [getPos player, getPos _trigger] spawn SB_fnc_spawnUnit;
-
+		_unit = [getPos player] call SB_fnc_spawnUnit;
+		_unit = [getPos player, group player] call SB_fnc_spawnUnit;
+		 Unit = [getPos player, getPos Trigger, group (allUnits select 0)] call SB_fnc_spawnUnit;
+		_unit = [getPos player, east, getPos _trigger] call SB_fnc_spawnUnit;
+		_unit = [getPos player, "random", getPos _trigger] call SB_fnc_spawnUnit;
+	
 	TODO: 
 
 */
@@ -538,20 +596,14 @@ SB_fnc_spawnUnit =
 	_maxSpawnDistance = 50;
 
 	_spawnLocation = _this select 0;
-	_targetLocation = _this select 1;
-	diag_log format ["_targetLocation: %1", _targetLocation];
-
-	
+	_targetLocation = if (count _this > 1) then {_this select 1} else {[0,0,0]};
 	_group = if (count _this > 2) then {_this select 2} else {nil};
-	diag_log format ["1- _group: %1", _group];
 
 	private ["_i", "_kgroup", "_kgroups", "_kgroupsOdds", "_cnt", "_odds"];
-	_kgroups = [civilian, independent, west, east];
-	_kgroupsOdds = [100, 70, 50, 5];
+	_kgroups = [civilian, independent, west, east, sideEnemy];
+	_kgroupsOdds = [100, 70, 50, 30, 10];
 	_cnt = count _kgroups;
-	diag_log format ["_cnt: %1", _cnt];
 	_odds = random (100);
-	diag_log format ["_odds: %1", _odds];
 
 	for "_i" from 0 to (_cnt -1) do
 	{
@@ -560,10 +612,8 @@ SB_fnc_spawnUnit =
 			_kgroup = _kgroups select _i;
 		};
 	};
-	diag_log format ["_kgroup: %1", _kgroup];
 
 	if (isNil "_group") then {_group = createGroup _kgroup};
-	diag_log format ["2- _group: %1", side _group];
 
 	// Kind of units (8 for each)
 	_kunitsWEST = ["B_Soldier_02_f", "B_Soldier_F", "B_Soldier_GL_F", "B_soldier_exp_F", "B_soldier_AA_F", "B_soldier_AA_F", "B_spotter_F", "B_sniper_F"];
@@ -583,31 +633,34 @@ SB_fnc_spawnUnit =
 	if (side _group == civilian) then {_kunitGroup = _kunitsGroups select 3};
 
 	_cnt = count _kunitGroup;
-	diag_log format ["_kunitGroup: %1, _tmp: %2", _kunitGroup, _cnt];
+	// diag_log format ["_kunitGroup: %1, _tmp: %2", _kunitGroup, _cnt];
 	_odds = random (100);
-	diag_log format ["_odds: %1", _odds];
+	// diag_log format ["_odds: %1", _odds];
 	
 	for "_i" from 0 to (_cnt - 1) do
 	{
 		if (_odds < _kunitsOdds select _i) then 
 		{
 			_kunit = _kunitGroup select _i;
-			diag_log _kunit;
 		};
 	};
 	
-	diag_log format ["Unit %1 | group %2", _kunit, _group];
-	diag_log format ["_spawnLocation: %1", _spawnLocation];
-	// _unit = _kunit createUnit [_spawnLocation, _group, "this allowFleeing 0", 0.9, "Private"];
+	// diag_log format ["Unit %1 | group %2", _kunit, _group];
+	// diag_log format ["_spawnLocation: %1", _spawnLocation];
 	_unit = _group createUnit[_kunit, _spawnLocation, [], 5, "NONE"];
 	_unit allowFleeing 0; // https://community.bistudio.com/wiki/allowFleeing
 
-	_radius = 50;
-	_xx = _targetLocation select 0;
-	_yy = _targetLocation select 1;
-	_dir = random 360;
-	_pos = [(_xx + (random _radius) * sin _dir), (_yy + (random _radius) * cos _dir), 0];
-	_unit doMove _pos; // transform unit text in object
+	
+	// Move to a location if given
+	if !(_targetLocation isEqualTo [0, 0, 0]) then {
+		_radius = 50;
+		_xx = _targetLocation select 0;
+		_yy = _targetLocation select 1;
+		_dir = random 360;
+		_pos = [(_xx + (random _radius) * sin _dir), (_yy + (random _radius) * cos _dir), 0];
+		_unit doMove _pos; // transform unit text in object
+	};
+
 	_unit // Return 
 };
 
