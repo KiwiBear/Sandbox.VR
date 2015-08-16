@@ -561,11 +561,59 @@ SB_fnc_spawnUniformRandomUnits  =
 		diag_log format ["Unit: %1 spawn at: %2", _unit, _spawnAt];	
 	};
 
+	// move east units to the center of the town;
+	{
+	 	if (side _x == east) then 
+	 	{
+	 		_x doMove getPos Trigger;
+	 	};
+	 } foreach allUnits;
+
 	// see players marks at map
 	[] spawn sandbox_playerMarkerPosition;
-
 };
 
+/*
+ 	Description: Spawns a lightning storm given a trigger mark 
+ 	Paramater(s): None
+	Returns: None
+	USAGE: [] spawn SB_fnc_spawnStorm;
+	TODO: change trigger and use a parameter instead
+*/
+
+SB_fnc_spawnStorm = {
+	
+	private ["_paramsTrigger", "_radius"];
+	
+	_paramsTrigger = triggerArea Trigger;  
+	_radius = _paramsTrigger select 0;
+
+	while {true} do {
+
+		private ["_t", "_u", "_r"];
+		_t =  2 * pi * random (_radius);
+		_u = random (_radius) + random (_radius);
+
+		if (_u > 1) then {
+		  _r = 2 - _u;
+		} else {
+			_r = _u;
+		};
+
+		_posX = _r * cos _t; 
+		_posY = _r * sin _t; 
+
+	  _triggerLocation = getPos Trigger; // Trigger is defined at sqm
+
+	  _spawnAt = [(_triggerLocation select 0) + _posX, (_triggerLocation select 1) + _posY, 0];
+
+	  diag_log format ["**** %1 ****", _spawnAt];
+
+	   _spawnAt spawn SB_lightning; // the first time didn't work! // bug!
+
+	   sleep random 10;
+	};
+};
 
 /*
  	Description: Spawn a unit given a spawn location. Optional is side and target location
@@ -600,7 +648,7 @@ SB_fnc_spawnUnit =
 
 	private ["_i", "_kgroup", "_kgroups", "_kgroupsOdds", "_cnt", "_odds"];
 	_kgroups = [west, east, independent, civilian];
-	_kgroupsOdds = [100, 75, 50, 25];
+	_kgroupsOdds = [100, 85, 50, 5];
 	_cnt = count _kgroups;
 	_odds = random (100);
 
@@ -620,8 +668,8 @@ SB_fnc_spawnUnit =
 	_kunitsIND = ["I_G_Soldier_F", "I_G_Soldier_GL_F", "I_Soldier_M_F", "I_Soldier_AA_F", "I_Soldier_LAT_F", "I_Soldier_exp_F", "I_Spotter_F", "I_Sniper_F"];
 	_kunitsCIV = ["C_man_1", "C_man_polo_1_F_afro", "C_man_polo_2_F_euro", "C_man_p_fugitive_F_asia", "C_man_p_fugitive_F_euro", "C_man_p_fugitive_F_afro", "C_man_w_worker_F", "C_Nikos_aged"];
 
-	_kunitsOdds = [100, 90, 80, 70, 50, 30, 20, 10];
 	_kunitsGroups = [_kunitsWEST, _kunitsEAST, _kunitsIND, _kunitsCIV];
+	_kunitsOdds = [100, 90, 80, 70, 50, 30, 20, 10];
 
 	// select group depending on _group
 	private ["_i", "_odds", "_kunit", "_kunitGroup", "_cnt"];

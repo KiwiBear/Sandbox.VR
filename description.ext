@@ -4,6 +4,21 @@ author ="Rotter&Lyud";
 onLoadName = "Arma 3 Sandbox";
 onLoadMission = "A simple testing environment for learning and outright experimentation";
 loadScreen = "pictures\intro.paa";
+respawn = "BASE";
+respawndelay = 3;
+enableDebugConsole = 0;
+disableAI = 1;
+allowFunctionsRecompile = 1;
+showMap = 1;
+disableChannels[] = {0, 1, 2, 6};
+
+
+class Header
+{
+	gameType = DM; // Death Match 
+	minPlayers = 1;
+	maxPlayers = 2;
+};
 
 /**
  * Need it for content acces of mission.sqm
@@ -13,3 +28,5 @@ class MissionSQM
 {
 	#include "mission.sqm"
 };
+
+#include "cfgFunctions.hpp"
