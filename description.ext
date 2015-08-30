@@ -29,4 +29,6 @@ class MissionSQM
 	#include "mission.sqm"
 };
 
+// Call this file to better organization? :? :? 
+// Need to look more code
 #include "cfgFunctions.hpp"

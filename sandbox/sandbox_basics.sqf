@@ -225,7 +225,7 @@ sandbox_playerMarkerPosition =
 
 	missionNamespace setVariable ["playerMarkerPosition", true];
 
-	hint format ["%1 can be tracked on map. Press 'M' Key to see it in action", name player];
+	//hint format ["%1 can be tracked on map. Press 'M' Key to see it in action", name player];
 
 	while {true} do {
 		
@@ -607,11 +607,9 @@ SB_fnc_spawnStorm = {
 
 	  _spawnAt = [(_triggerLocation select 0) + _posX, (_triggerLocation select 1) + _posY, 0];
 
-	  diag_log format ["**** %1 ****", _spawnAt];
+	  _spawnAt spawn SB_lightning; // the first time didn't work! // bug!
 
-	   _spawnAt spawn SB_lightning; // the first time didn't work! // bug!
-
-	   sleep random 10;
+	  sleep random 30;
 	};
 };
 

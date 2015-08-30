@@ -10,7 +10,7 @@
 */
 
 
-SB_lightning = {
+SANDBOX_lightning = {
 
 	_pos = _this;
 	//diag_log format ["Create a LightningBold at %1", _pos];

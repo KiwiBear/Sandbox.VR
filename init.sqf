@@ -1,5 +1,5 @@
 /**
- *  Sandbox setup 
+ *  Sandbox initialization code 
  */
 
 enableSaving[false, false];
@@ -13,36 +13,11 @@ enableSaving[false, false];
 #define DEBUG true;
 #define DEBUG_LEVEL 3;
 
-
-onPreloadFinished {
-	enableEnvironment false; // Enable/disable environmental effects (ambient life + sound).
-	TRUE_UID = getPlayerUID player;
-	call SB_fnc_clientSetup; // call Clients\setup.sqf
-};
+// global variables
+SANDBOX_GameStarted = false;
 
 // return the absolute dir path where is located the mission
 _descExtPath = str missionConfigFile;
 currMissionDir = compileFinal str (_descExtPath select [0, count _descExtPath - 15]);
 
 
-// global variables
-// startPlayerPosition = getPos player; 
-
-// ?
-/*
-if (IsServer) then {
-	ace_sys_tracking_markers_enabled = false;
-	publicVariable "ace_sys_tracking_markers_enabled";
-};
-*/
-
-// https://community.bistudio.com/wiki/cutText
-9999 cutText ["Welcome to ArmA 3 Sandbox", "PLAIN", 1, true];
-
-#include "sandbox\sandbox_start.sqf";
-
-// create 30 guys in a radius of 250
-[75, 250] call SB_fnc_spawnUniformRandomUnits;
-
-// add a simple lightning storm
-[] spawn SB_fnc_spawnStorm;
