@@ -20,6 +20,19 @@ class Header
 	maxPlayers = 2;
 };
 
+
+class CfgUnitInsignia
+{
+	class sandboxID
+	{
+		displayName = "Sandbox Test Arena";
+		author = "Lyud And Rotter";
+		//texture = "images\insignia.paa";
+		textureVehicle = "";
+	};
+};
+
+
 /**
  * Need it for content acces of mission.sqm
  * https://community.bistudio.com/wiki/missionConfigFile

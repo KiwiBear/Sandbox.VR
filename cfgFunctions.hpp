@@ -16,11 +16,20 @@ class cfgFunctions {
 			class mapSetup {
 				file = "Server\Map\map_setup.sqf";
 			};
+			class vehicleHandler {
+				file = "Server\Map\vehicle_handler.sqf";
+			};
 		};
 		class Client {
 			// Root client
 			class clientSetup {
 				file = "Clients\setup.sqf";
+			};
+			class clientStart {
+				file = "Clients\start.sqf";
+			};
+			class playerSetup {
+				file = "Clients\Player\setup_player.sqf";
 			};
 			class clientWeather {
 				file = "Clients\Map\setup_weather.sqf";
